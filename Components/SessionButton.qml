@@ -1,24 +1,30 @@
 //
-// This file is part of Sugar Light, a theme for the Simple Display Desktop Manager.
+// This file is part of SDDM Sugar Candy.
+// A theme for the Simple Display Desktop Manager.
 //
-// Copyright 2018 Marian Arlt
+// Copyright (C) 2018–2020 Marian Arlt
 //
-// Sugar Light is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
+// SDDM Sugar Candy is free software: you can redistribute it and/or modify it
+// under the terms of the GNU General Public License as published by the
+// Free Software Foundation, either version 3 of the License, or any later version.
 //
-// Sugar Light is distributed in the hope that it will be useful,
+// You are required to preserve this and any additional legal notices, either
+// contained in this file or in other files that you received along with
+// SDDM Sugar Candy that refer to the author(s) in accordance with
+// sections §4, §5 and specifically §7b of the GNU General Public License.
+//
+// SDDM Sugar Candy is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Sugar Light. If not, see <https://www.gnu.org/licenses/>.
+// along with SDDM Sugar Candy. If not, see <https://www.gnu.org/licenses/>
 //
 
 import QtQuick 2.11
 import QtQuick.Controls 2.4
+import QtGraphicalEffects 1.0
 
 Item {
     id: sessionButton
@@ -28,13 +34,30 @@ Item {
 
     property var selectedSession: selectSession.currentIndex
     property string textConstantSession
+    property int loginButtonWidth
+    property Control exposeSession: selectSession
 
     ComboBox {
         id: selectSession
 
-        anchors.horizontalCenter: parent.horizontalCenter
-        width: parent.width
         hoverEnabled: true
+        anchors.left: parent.left
+        Keys.onPressed: {
+            if (event.key == Qt.Key_Up && loginButton.state != "enabled" && !popup.opened)
+                revealSecret.focus = true,
+                revealSecret.state = "focused",
+                currentIndex = currentIndex + 1;
+            if (event.key == Qt.Key_Up && loginButton.state == "enabled" && !popup.opened)
+                loginButton.focus = true,
+                loginButton.state = "focused",
+                currentIndex = currentIndex + 1;
+            if (event.key == Qt.Key_Down && !popup.opened)
+                systemButtons.children[0].focus = true,
+                systemButtons.children[0].state = "focused",
+                currentIndex = currentIndex - 1;
+            if ((event.key == Qt.Key_Left || event.key == Qt.Key_Right) && !popup.opened)
+                popup.open();
+        }
 
         model: sessionModel
         currentIndex: model.lastIndex
@@ -46,13 +69,13 @@ Item {
             contentItem: Text {
                 text: model.name
                 font.pointSize: root.font.pointSize * 0.8
-                color: selectSession.highlightedIndex === index ? "white" : root.palette.text
+                color: selectSession.highlightedIndex === index ? root.palette.highlight.hslLightness >= 0.7 ? "#444444" : "white" : root.palette.window.hslLightness >= 0.8 ? root.palette.highlight.hslLightness >= 0.8 ? "#444444" : root.palette.highlight : "white"
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
             }
             highlighted: parent.highlightedIndex === index
             background: Rectangle {
-                color: selectSession.highlightedIndex === index ? root.palette.text : "transparent"
+                color: selectSession.highlightedIndex === index ? root.palette.highlight : "transparent"
             }
         }
 
@@ -63,44 +86,54 @@ Item {
         contentItem: Text {
             id: displayedItem
             text: (config.TranslateSession || (textConstantSession + ":")) + " " + selectSession.currentText
-            color: root.palette.text // parent.down ? root.palette.text : parent.hovered ? Qt.lighter(root.palette.text, 1.8) : root.palette.text
+            color: root.palette.text
             verticalAlignment: Text.AlignVCenter
-            horizontalAlignment: Text.AlignLeft
+            anchors.left: parent.left
+            anchors.leftMargin: 3
             font.pointSize: root.font.pointSize * 0.8
+            Keys.onReleased: parent.popup.open()
         }
 
         background: Rectangle {
             color: "transparent"
             border.width: parent.visualFocus ? 1 : 0
-            border.color: "transparent" // parent.visualFocus ? root.palette.text : "transparent"
+            border.color: "transparent"
             height: parent.visualFocus ? 2 : 0
             width: displayedItem.implicitWidth
             anchors.top: parent.bottom
             anchors.left: parent.left
+            anchors.leftMargin: 3
         }
 
         popup: Popup {
             id: popupHandler
             y: parent.height - 1
-            width: parent.width
+            x: config.ForceRightToLeft == "true" ? -loginButtonWidth + displayedItem.width : 0
+            width: sessionButton.width
             implicitHeight: contentItem.implicitHeight
-            padding: 1
+            padding: 10
 
             contentItem: ListView {
-                clip: false
-                implicitHeight: contentHeight
+                clip: true
+                implicitHeight: contentHeight + 20
                 model: selectSession.popup.visible ? selectSession.delegateModel : null
                 currentIndex: selectSession.highlightedIndex
                 ScrollIndicator.vertical: ScrollIndicator { }
             }
 
             background: Rectangle {
-                width: parent.width
-                height: parent.height
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.bottom: parent.bottom
-                border.width: 1
-                border.color: root.palette.text
+                radius: config.RoundCorners / 2
+                color: config.BackgroundColor
+                layer.enabled: true
+                layer.effect: DropShadow {
+                    transparentBorder: true
+                    horizontalOffset: 0
+                    verticalOffset: 0
+                    radius: 20 * config.InterfaceShadowSize
+                    samples: 41 * config.InterfaceShadowSize
+                    cached: true
+                    color: Qt.hsla(0,0,0,config.InterfaceShadowOpacity)
+                }
             }
 
             enter: Transition {
@@ -114,11 +147,11 @@ Item {
                 when: selectSession.down
                 PropertyChanges {
                     target: displayedItem
-                    color: Qt.lighter(config.AccentColor, 1.1)
+                    color: Qt.darker(root.palette.highlight, 1.1)
                 }
                 PropertyChanges {
                     target: selectSession.background
-                    border.color: Qt.lighter(config.AccentColor, 1.1)
+                    border.color: Qt.darker(root.palette.highlight, 1.1)
                 }
             },
             State {
@@ -126,11 +159,11 @@ Item {
                 when: selectSession.hovered
                 PropertyChanges {
                     target: displayedItem
-                    color: Qt.lighter(config.AccentColor, 1.3)
+                    color: Qt.lighter(root.palette.highlight, 1.1)
                 }
                 PropertyChanges {
                     target: selectSession.background
-                    border.color: Qt.lighter(config.AccentColor, 1.3)
+                    border.color: Qt.lighter(root.palette.highlight, 1.1)
                 }
             },
             State {
@@ -138,11 +171,11 @@ Item {
                 when: selectSession.visualFocus
                 PropertyChanges {
                     target: displayedItem
-                    color: config.AccentColor
+                    color: root.palette.highlight
                 }
                 PropertyChanges {
                     target: selectSession.background
-                    border.color: config.AccentColor
+                    border.color: root.palette.highlight
                 }
             }
         ]

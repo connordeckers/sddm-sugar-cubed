@@ -1,0 +1,48 @@
+[General]
+Background="Backgrounds/background"
+## Path relative to the theme root directory. Most standard image file formats are allowed including support for transparency. (e.g. background.jpeg/illustration.GIF/Foto.png/undraw.svgz)
+
+DimBackgroundImage="0.25"
+## Double between 0 and 1 used for the alpha channel of a darkening overlay. Use to darken your background image on the fly.
+
+ScreenWidth="3440"
+ScreenHeight="1440"
+## Adjust to your resolution to help SDDM speed up on calculations
+
+
+## [Design Customizations]
+
+ThemeColor="whitesmoke"
+
+AccentColor="#47228a"
+## Used for elements in focus/hover/pressed. Should be contrasting to the background and the MainColor to achieve the best effect.
+
+RoundCorners="40"
+
+## [Interface Behavior]
+
+AllowBadUsernames="true"
+## Do not change this! Uppercase letters are generally not allowed in usernames. This option is only for systems that differ from this standard! Also shows username as is instead of capitalized.
+
+
+## [Locale Settings]
+
+HourFormat="hh:mma"
+## Defaults to Locale.ShortFormat - Accepts "long" or a custom string like "hh:mm A". See http://doc.qt.io/qt-5/qml-qtqml-date.html
+
+DateFormat="dddd | MMMM dd, yyyy"
+## Defaults to Locale.LongFormat - Accepts "short" or a custom string like "dddd, d 'of' MMMM". See http://doc.qt.io/qt-5/qml-qtqml-date.html
+
+ 
+# [Translations]
+HeaderText="Welcome!"
+TranslateUsernamePlaceholder="Username"
+TranslatePasswordPlaceholder="Password"
+TranslateShowPassword="Show Password"
+TranslateLoginFailed="Login Failed!"
+TranslateLogin="Log in"
+TranslateSession="Session:"
+TranslateSuspend="Suspend"
+TranslateReboot="Reboot"
+TranslateShutdown="Shutdown"
+

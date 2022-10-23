@@ -1,16 +1,16 @@
 [SddmGreeterTheme]
-Name=Sugar Light
-Description=The sweetest theme around
-Author=Marian Alexander Arlt
-Copyright=Copyright (C) 2018 Marian Arlt
+Name=Sugar-cubed
+Description=Premium Sugar for SDDM
+Author=Connor Deckers
+Copyright=Copyright (C) 2022 Connor Deckers
 License=GPL-3.0-or-later
 Type=sddm-theme
 Version=1.0
-Website=https://github.com/MarianArlt/sddm-sugar-light
-Screenshot=Preview.png
+Website=https://github.com/connordeckers/sddm-sugar-cubed
+Screenshot=Previews/PartialBlur.png
 MainScript=Main.qml
 ConfigFile=theme.conf
 TranslationsDirectory=translations
-Email=marianarlt@icloud.com
-Theme-Id=sugar-light
+Email=github@connordeckers.com
+Theme-Id=sugar-cubed
 Theme-API=2.11
